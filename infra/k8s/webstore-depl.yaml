@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webstore-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webstore
+  template:
+    metadata:
+      labels:
+        app: webstore
+    spec:
+      containers:
+        - name: webstore
+          image: milovicvojin/webstore
+          env:
+            - name: JWT_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-private-secret
+                  key: JWT_ACCESS_TOKEN
+            - name: MONGO_URI
+              value: "mongodb://webstore-mongo-srv:27017/webstore"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webstore-srv
+spec:
+  selector:
+    app: webstore
+  ports:
+    - name: webstore
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

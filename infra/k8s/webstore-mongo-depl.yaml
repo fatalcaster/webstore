@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webstore-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webstore-mongo
+  template:
+    metadata:
+      labels:
+        app: webstore-mongo
+    spec:
+      containers:
+        - name: webstore-mongo
+          image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webstore-mongo-srv
+spec:
+  selector:
+    app: webstore-mongo
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
