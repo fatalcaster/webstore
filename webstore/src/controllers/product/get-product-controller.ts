@@ -1,4 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
+import { NotFoundError } from "../../errors/not-found-error";
 import {
   getManyProducts,
   getProductById,
@@ -13,8 +14,7 @@ const getSingleProductController = async (
   const { id } = req.params;
   const product = await getProductById(id);
   if (!product) {
-    // TODO: Throw custom not found error
-    throw new Error();
+    throw new NotFoundError();
   }
   res.send(product);
 };

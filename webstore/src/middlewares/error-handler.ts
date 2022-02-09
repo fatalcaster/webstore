@@ -3,13 +3,13 @@ import { CustomError } from "../errors/custom-error";
 
 export const errorHandler = async (
   err: CustomError,
-  request: FastifyRequest,
+  _request: FastifyRequest,
   reply: FastifyReply
 ) => {
   console.log("Something went wrong", err);
 
   if (err instanceof CustomError) {
-    return reply.status(err.statusCode).send(err.serializeErrors());
+    reply.status(err.statusCode).send(err.serializeErrors());
   }
 
   console.error(err);

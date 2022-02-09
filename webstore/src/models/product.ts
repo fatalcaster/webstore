@@ -4,6 +4,7 @@ export interface ProductProps {
   name: string;
   desc: string;
   price: number;
+  stock?: number | "unlimited";
   ratingSum?: number;
   votes?: number;
   // optional
@@ -18,10 +19,11 @@ export interface ProductDoc extends Document {
   desc: string;
   price: number;
   ratingSum: number;
+  stock: number | "unlimited";
   votes: number;
 }
 
-interface PostModel extends Model<ProductDoc> {
+interface ProductModel extends Model<ProductDoc> {
   build(attrs: ProductProps): ProductDoc;
 }
 
@@ -49,6 +51,11 @@ const productSchema = new Schema<ProductDoc>(
       required: true,
       default: 0,
     },
+    stock: {
+      type: String,
+      required: true,
+      default: "unlimited"
+    }
   },
   {
     toJSON: {
@@ -70,6 +77,6 @@ productSchema.statics.build = (attrs: ProductProps) => {
   return new Product(attrs);
 };
 
-const Product = model<ProductDoc, PostModel>("Product", productSchema);
+const Product = model<ProductDoc, ProductModel>("Product", productSchema);
 
 export { Product };

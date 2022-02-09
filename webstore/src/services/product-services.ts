@@ -1,5 +1,5 @@
+import { NotFoundError } from "../errors/not-found-error";
 import { Product, ProductDoc, ProductProps } from "../models/product";
-import { TProductUpdate } from "../types/product";
 
 const QUERY_LIMIT = 50;
 
@@ -30,13 +30,13 @@ const getManyProducts = async (lmt?: number, before?: Date) => {
 const createProduct = async (new_product: ProductProps) => {
   const product = Product.build(new_product);
   await product.save();
+  return product;
 };
 
-const updateProduct = async (id: string, update: TProductUpdate) => {
+const updateProduct = async (id: string, update: Partial<ProductDoc>) => {
   const product = (await getProductById(id)) as ProductDoc;
   if (!product) {
-    // TODO: Throw Not Found Error
-    throw new Error();
+      throw new NotFoundError();
   }
   let key: keyof ProductDoc;
   for (key in product) {
