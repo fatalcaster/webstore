@@ -54,8 +54,8 @@ const productSchema = new Schema<ProductDoc>(
     stock: {
       type: String,
       required: true,
-      default: "unlimited"
-    }
+      default: "unlimited",
+    },
   },
   {
     toJSON: {
@@ -76,6 +76,10 @@ const productSchema = new Schema<ProductDoc>(
 productSchema.statics.build = (attrs: ProductProps) => {
   return new Product(attrs);
 };
+
+productSchema.pre("findById", async () => {
+  console.log("PROSAO PROSAO PROSAO");
+});
 
 const Product = model<ProductDoc, ProductModel>("Product", productSchema);
 

@@ -16,13 +16,15 @@ const getManyProducts = async (lmt?: number, before?: Date) => {
       createdOn: { $lte: before },
     })
       .limit(limit)
-      .sort("_id");
+      .sort("_id")
+      .exec();
   } else {
     products = await Product.find({
       createdOn: { $lte: before },
     })
       .limit(limit)
-      .sort("_id");
+      .sort("_id")
+      .exec();
   }
   return products;
 };
@@ -36,7 +38,7 @@ const createProduct = async (new_product: ProductProps) => {
 const updateProduct = async (id: string, update: Partial<ProductDoc>) => {
   const product = (await getProductById(id)) as ProductDoc;
   if (!product) {
-      throw new NotFoundError();
+    throw new NotFoundError();
   }
   let key: keyof ProductDoc;
   for (key in product) {

@@ -1,27 +1,92 @@
 import { app } from "../../../app";
+import { productRoutes } from "../../route-opts/product-opts";
 
 it("responds with a code different than 404", async () => {
   const response = await app.inject({
     method: "POST",
-    url: "/product",
+    url: productRoutes.createProduct,
   });
 
   expect(response.statusCode).not.toEqual(404);
 });
 
-
-it("creates a valid product with the response code of 201", async () => {
+it("attempts to create a product with an invalid name", async () => {
+  const cookie = await getAdminCookie();
   const response = await app.inject({
     method: "POST",
-    url: "/product",
+    url: productRoutes.createProduct,
+    payload: {
+      name: "T",
+      desc: "Testira se bas jako",
+      price: 200,
+      stock: 10,
+    },
+    cookies: cookie,
+  });
+  expect(response.statusCode).toEqual(400);
+});
+
+it("attempts to create a product without description", async () => {
+  const cookie = await getAdminCookie();
+  const response = await app.inject({
+    method: "POST",
+    url: productRoutes.createProduct,
+    payload: {
+      name: "Ttesat",
+      price: 200,
+      stock: 10,
+    },
+    cookies: cookie,
+  });
+  expect(response.statusCode).toEqual(400);
+});
+
+// it("attempts to create a product with invalid stock type", async () => {
+//   const cookie = await getAdminCookie();
+//   const response = await app.inject({
+//     method: "POST",
+//     url: productRoutes.createProduct,
+//     payload: {
+//       name: "Test",
+//       desc: "Testira se bas jako",
+//       price: 200,
+//       stock: "10",
+//     },
+//     cookies: cookie,
+//   });
+//   expect(response.statusCode).toEqual(400);
+// });
+
+// it("attempts to create a product with invalid price type", async () => {
+//   const cookie = await getAdminCookie();
+//   const response = await app.inject({
+//     method: "POST",
+//     url: productRoutes.createProduct,
+//     payload: {
+//       name: "Test",
+//       desc: "Testira se bas jako",
+//       price: "200",
+//       stock: 10,
+//     },
+//     cookies: cookie,
+//   });
+//   expect(response.statusCode).toEqual(400);
+// });
+
+it("creates a valid product with the response code of 201", async () => {
+  const cookie = await getAdminCookie();
+  const response = await app.inject({
+    method: "POST",
+    url: productRoutes.createProduct,
     payload: {
       name: "Test",
       desc: "Testira se bas jako",
       price: 200,
-      stock: 10
-    }
+      stock: 10,
+    },
+    cookies: cookie,
   });
   console.log(`\n\n\n\n${JSON.stringify(response.body)}\n\n\n\n\n`);
-  expect(JSON.parse(response.body).name).toEqual("Test"); 
+  expect(JSON.parse(response.body).name).toEqual("Test");
   expect(response.statusCode).toEqual(201);
 });

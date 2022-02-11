@@ -6,7 +6,7 @@
 import crypto from "crypto";
 import fs from "fs";
 
-function genKeyPair() {
+function genKeyPair(name: string) {
   // Generates an object where the keys are stored in properties `privateKey` and `publicKey`
   const keyPair = crypto.generateKeyPairSync("rsa", {
     modulusLength: 4096, // bits - standard for RSA keys
@@ -21,11 +21,13 @@ function genKeyPair() {
   });
 
   // Create the public key file
-  fs.writeFileSync(__dirname + "/id_rsa_pub.pem", keyPair.publicKey);
+  fs.writeFileSync(__dirname + `/${name}_pub.pem`, keyPair.publicKey);
 
   // Create the private key file
-  fs.writeFileSync(__dirname + "/id_rsa_priv.pem", keyPair.privateKey);
+  fs.writeFileSync(__dirname + `/${name}_priv.pem`, keyPair.privateKey);
 }
 
-// Generate the keypair
-genKeyPair();
+// Generate JWT_ACCESS
+genKeyPair("jwt_access");
+// Generate JWT_REFRESH
+genKeyPair("jwt_refresh");

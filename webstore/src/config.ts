@@ -9,10 +9,16 @@ export default {
   HOST: process.env.HOST || "localhost",
   PORT: process.env.PORT || 4000,
   MONGO_URI: process.env.MONGO_URI,
-  JWT_PRIVATE: readFileSync(
-    `${path.join(__dirname, "/../certs")}/id_rsa_priv.pem`
+  JWT_ACCESS_PRIVATE: readFileSync(
+    `${path.join(__dirname, "/../certs")}/jwt_access_priv.pem`
   ),
-  JWT_PUBLIC: readFileSync(
-    `${path.join(__dirname, "/../certs")}/id_rsa_pub.pem`
+  JWT_ACCESS_PUBLIC: readFileSync(
+    `${path.join(__dirname, "/../certs")}/jwt_access_pub.pem`
+  ),
+  JWT_REFRESH_PRIVATE: readFileSync(
+    `${path.join(__dirname, "/../certs")}/jwt_refresh_priv.pem`
+  ),
+  JWT_REFRESH_PUBLIC: readFileSync(
+    `${path.join(__dirname, "/../certs")}/jwt_refresh_pub.pem`
   ),
 };

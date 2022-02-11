@@ -1,16 +1,15 @@
 import { FastifyInstance } from "fastify";
 import {
-  createProductOpts,
-  getManyProductsOpts,
-  getSingleProductOpts,
-} from "./route-opts/product-opts";
+  getManyUsersOpts,
+  getSingleUserOpts,
+  userRoutes,
+} from "./route-opts/user-opts";
 
-function productRouter(app: FastifyInstance, _options: any, done: any) {
-  app.post("/product", createProductOpts);
-  app.get("/product", getManyProductsOpts);
-  app.get("/product/:id", getSingleProductOpts);
+function userRouter(app: FastifyInstance, _options: any, done: any) {
+  app.get(userRoutes.getSingleUser, getSingleUserOpts);
+  app.get(userRoutes.getManyUsers, getManyUsersOpts);
 
   done();
 }
 
-export { productRouter };
+export { userRouter };

@@ -1,19 +1,22 @@
 import { Schema, model, Document, Model } from "mongoose";
+import { Permissions } from "../interfaces/user-payload";
 
 export interface UserProps {
   email: string;
   password: string;
-//   country: string;
-//   address: string;
-//   zip: number;
-//   aptNum?: string;
-//   orders: []
+  permission?: Permissions;
+  //   country: string;
+  //   address: string;
+  //   zip: number;
+  //   aptNum?: string;
+  //   orders: []
 }
 
 export interface UserDoc extends Document {
   id: string;
   email: string;
   password: string;
+  permission: Permissions;
 }
 
 interface UserModel extends Model<UserDoc> {
@@ -25,11 +28,18 @@ const userSchema = new Schema<UserDoc>(
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     password: {
       type: String,
       required: true,
-    }
+    },
+    permission: {
+      type: String,
+      enum: Permissions,
+      required: true,
+      default: Permissions.Basic,
+    },
   },
   {
     toJSON: {

@@ -1,25 +1,34 @@
 import { createProductController } from "../../controllers/product/create-product-controller";
-import {
-  getManyProductsController,
-  getSingleProductController,
-} from "../../controllers/product/get-product-controller";
+import { getManyProductsController } from "../../controllers/product/get-many-products-controller";
+import { getSingleProductController } from "../../controllers/product/get-single-product-controller";
+import { requiresAdmin } from "../../middlewares/requires-admin";
+import { requiresValidId } from "../../middlewares/requires-valid-id";
+import { createProductSchema } from "../schemas/product/create-product-schema";
+
+const productRoutes = {
+  createProduct: "/api/product",
+  getOneProduct: "/api/product/:id",
+  getManyProducts: "/api/product",
+};
 
 const createProductOpts = {
-  // preValidation: requiresAuth,
-  // preHandler: createAnswerContentValidation,
+  schema: createProductSchema,
+  preValidation: requiresAdmin,
   handler: createProductController,
 };
 
 const getSingleProductOpts = {
-  // preValidation: requiresAuth,
-  // preHandler: createAnswerContentValidation,
+  preHandler: requiresValidId,
   handler: getSingleProductController,
 };
 
 const getManyProductsOpts = {
-  // preValidation: requiresAuth,
-  // preHandler: createAnswerContentValidation,
   handler: getManyProductsController,
 };
 
-export { createProductOpts, getSingleProductOpts, getManyProductsOpts };
+export {
+  createProductOpts,
+  getSingleProductOpts,
+  getManyProductsOpts,
+  productRoutes,
+};

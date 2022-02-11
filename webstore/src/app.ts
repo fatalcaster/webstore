@@ -3,7 +3,15 @@ import fastify, { FastifyInstance } from "fastify";
 import { NotFoundError } from "./errors/not-found-error";
 import { errorHandler } from "./middlewares/error-handler";
 import { productRouter } from "./routes/product-router";
-import jwt from "fastify-jwt";
+import { userRouter } from "./routes/user-router";
+import cookie from "fastify-cookie";
+import { UserPayload } from "./interfaces/user-payload";
+import { currentUser } from "./middlewares/current-user";
+import { authRouter } from "./routes/auth-router";
+import { orderRouter } from "./routes/order-router";
+import { FastifySchemaValidationError } from "fastify/types/schema";
+import { RequestValidationError } from "./errors/request-validation-error";
+import { serializeValidationErrors } from "./helpers/serialize-validation-error";
 
 const app: FastifyInstance = fastify({
   logger: {
@@ -18,22 +26,30 @@ const app: FastifyInstance = fastify({
   trustProxy: true,
 });
 
-app.register(jwt, {
-  secret: {
-    private: config.JWT_PRIVATE,
-    public: config.JWT_PUBLIC,
-  },
-  sign: { algorithm: "RS256" },
-});
+app.register(cookie);
 
+// ROUTERS
 app.register(productRouter);
+app.register(userRouter);
+app.register(authRouter);
+app.register(orderRouter);
 // app.setErrorHandler()
 
-app.post("/signup", (_req, reply) => {
-  // some code
-  const token = app.jwt.sign("test");
-  reply.send({ token });
-});
+app.addHook("onRequest", currentUser);
+
+declare module "fastify" {
+  interface FastifyRequest {
+    user?: UserPayload;
+  }
+}
+
+app.setSchemaErrorFormatter(
+  (errors: FastifySchemaValidationError[], _dataVar: string) => {
+    // console.log("CUSTOM FORMATTER\n\n\n", errors);
+    const err = serializeValidationErrors(errors);
+    throw new RequestValidationError(err);
+  }
+);
 
 app.setErrorHandler(errorHandler);
 

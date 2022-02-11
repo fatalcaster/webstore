@@ -1,21 +1,22 @@
-import { createUserController } from "../../controllers/user/create-product-controller";
+import { getManyUsersController } from "../../controllers/user/get-many-users-controller";
+import { requiresAdmin } from "../../middlewares/requires-admin";
+import { getSingleUserController } from "../../controllers/user/get-single-user-controller";
+import { requiresValidId } from "../../middlewares/requires-valid-id";
 
-const createUserOpts = {
-  // preValidation: requiresAuth,
-  // preHandler: createAnswerContentValidation,
-  handler: createUserController,
+const userRoutes = {
+  getSingleUser: "/api/user/:id",
+  getManyUsers: "/api/user",
 };
 
-// const getSingleUserOpts = {
-//   // preValidation: requiresAuth,
-//   // preHandler: createAnswerContentValidation,
-//   handler: getSingleUserController,
-// };
+const getManyUsersOpts = {
+  preValidation: requiresAdmin,
+  handler: getManyUsersController,
+};
 
-// const getManyUsersOpts = {
-//   // preValidation: requiresAuth,
-//   // preHandler: createAnswerContentValidation,
-//   handler: getManyUsersController,
-// };
+const getSingleUserOpts = {
+  preValidation: requiresAdmin,
+  preHandler: requiresValidId,
+  handler: getSingleUserController,
+};
 
-export { createUserOpts };
+export { userRoutes, getManyUsersOpts, getSingleUserOpts };
