@@ -12,16 +12,21 @@ export function serializeValidationErrors(
 ) {
   const err: ValidationErrorTemplate[] = [];
   for (let i = 0; i < validation.length; i++) {
-    if (validation[i].dataPath)
+    if (validation[i].dataPath) {
+      let dataPath = validation[i].dataPath;
+      if (dataPath![0] === ".") {
+        dataPath = dataPath?.substring(1);
+      }
       err.push({
-        params: validation[i].dataPath!,
+        params: dataPath!,
         msg: validation[i].message || "Invalid field",
       });
-    else
+    } else {
       err.push({
-        params: validation[i].params?.missingProperty! || "Mssing property",
+        params: validation[i].params?.missingProperty || "body",
         msg: validation[i].message || "Invalid field",
       });
+    }
   }
   return err;
 }

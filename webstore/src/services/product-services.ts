@@ -1,6 +1,5 @@
 import { NotFoundError } from "../errors/not-found-error";
 import { Product, ProductDoc, ProductProps } from "../models/product";
-
 const QUERY_LIMIT = 50;
 
 const getProductById = async (id: string) => {
@@ -8,25 +7,29 @@ const getProductById = async (id: string) => {
   return product;
 };
 
-const getManyProducts = async (lmt?: number, before?: Date) => {
-  const limit = lmt || QUERY_LIMIT;
+type TGetManyProducts = {
+  id_range?: string[];
+  limit?: number;
+  before?: Date;
+};
+
+const getManyProducts = async ({
+  id_range,
+  limit,
+  before,
+}: TGetManyProducts) => {
+  const lmt = limit || QUERY_LIMIT;
   let products;
-  if (before) {
-    products = await Product.find({
-      createdOn: { $lte: before },
-    })
-      .limit(limit)
-      .sort("_id")
-      .exec();
-  } else {
-    products = await Product.find({
-      createdOn: { $lte: before },
-    })
-      .limit(limit)
-      .sort("_id")
-      .exec();
-  }
+  const query = {
+    ...(before && { createdOn: { $lte: before } }),
+    ...(id_range && { _id: { $in: id_range } }),
+  };
+  products = await Product.find(query).limit(lmt).sort("_id").exec();
   return products;
+};
+
+const updateProductStock = async (id: string, qty: number) => {
+  return await Product.findByIdAndUpdate(id, { $inc: { stock: qty } });
 };
 
 const createProduct = async (new_product: ProductProps) => {
@@ -60,4 +63,5 @@ export {
   createProduct,
   updateProduct,
   deleteProduct,
+  updateProductStock,
 };

@@ -1,22 +1,15 @@
 import { app } from "../../../app";
+import { Product } from "../../../models/product";
 import { productRoutes } from "../../route-opts/product-opts";
 
 const createValidProduct = async () => {
-  const cookie = await getAdminCookie();
-  const response = await app.inject({
-    method: "POST",
-    url: productRoutes.createProduct,
-    payload: {
-      name: "Test",
-      desc: "Testira se bas jako",
-      price: 200,
-      stock: 10,
-    },
-    cookies: cookie,
+  const product = Product.build({
+    name: "Random product name",
+    desc: "This is a product desc",
+    price: 2000,
   });
-  expect(JSON.parse(response.body).name).toEqual("Test");
-  expect(response.statusCode).toEqual(201);
-  return JSON.parse(response.body);
+  await product.save();
+  return product;
 };
 
 it("responds with a code different than 404", async () => {
@@ -30,8 +23,12 @@ it("responds with a code different than 404", async () => {
 
 it("returns all available products", async () => {
   const prodNum = 5;
-  let product;
-  for (let i = 0; i < prodNum; i++) product = await createValidProduct();
+  let product = await createValidProduct();
+  for (let i = 0; i < prodNum - 1; i++) product = await createValidProduct();
+  const inserted = (await Product.find({})).length;
+  console.log(inserted);
+  expect(inserted).toEqual(prodNum);
+
   const response = await app.inject({
     method: "GET",
     url: productRoutes.getManyProducts,
@@ -39,20 +36,26 @@ it("returns all available products", async () => {
   console.log(response.statusCode);
 
   expect(response.statusCode).toEqual(200);
-  expect(JSON.parse(response.body)[0].name).toEqual(product.name);
+  // console.log(response.body);
+  expect(JSON.parse(response.body).length).toEqual(prodNum);
+  expect(JSON.parse(response.body)[0].name).toEqual(product!.name);
   expect(JSON.parse(response.body).length).toEqual(prodNum);
 });
 
 it("returns 3 available products", async () => {
   const prodNum = 5;
-  let product;
-  for (let i = 0; i < prodNum; i++) product = await createValidProduct();
+  let product = await createValidProduct();
+  for (let i = 0; i < prodNum - 1; i++) product = await createValidProduct();
+  const inserted = (await Product.find({})).length;
+  console.log(inserted);
+  expect(inserted).toEqual(prodNum);
+
   const response = await app.inject({
     method: "GET",
     url: `${productRoutes.getManyProducts}?limit=3`,
   });
-  console.log(response.statusCode);
   expect(response.statusCode).toEqual(200);
-  expect(JSON.parse(response.body)[0].name).toEqual(product.name);
+  expect(JSON.parse(response.body).length).toEqual(3);
+  expect(JSON.parse(response.body)[0].name).toEqual(product!.name);
   expect(JSON.parse(response.body).length).toEqual(3);
 });

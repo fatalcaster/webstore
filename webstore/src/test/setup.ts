@@ -22,9 +22,15 @@ declare global {
 let mongo: any;
 beforeAll(async () => {
   app.register(testingRouter);
+
+  // await MongoMemoryReplSet.create({
+  //   replSet: { name: "testset", count: 1, storageEngine: "wiredTiger" },
+  // });
   mongo = await MongoMemoryServer.create();
 
   const mongoUri = mongo.getUri();
+
+  // const uri = replset.getUri();
 
   await mongoose.connect(mongoUri);
 });

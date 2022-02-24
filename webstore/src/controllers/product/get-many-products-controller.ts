@@ -10,7 +10,7 @@ const getManyProductsController = async (
   res: FastifyReply
 ) => {
   const { limit, before } = req.query;
-  const products = await getManyProducts(limit, before);
+  const products = await getManyProducts({ limit: limit, before: before });
   res.send(products);
 };
 

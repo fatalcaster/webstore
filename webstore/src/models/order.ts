@@ -1,7 +1,7 @@
-import { Schema, model, Document, Model } from "mongoose";
+import { Schema, model, Document, Model, ObjectId } from "mongoose";
 import { OrderStatus } from "../interfaces/order-status";
-import { ProductDoc } from "./product";
 import mongoose from "mongoose";
+import { ProductDoc } from "./product";
 
 export interface OrderProps {
   // customer?: UserDoc;
@@ -27,7 +27,7 @@ export interface OrderDoc extends Document {
   status: OrderStatus;
   cart: {
     qty: number;
-    product: ProductDoc;
+    product: ObjectId;
   }[];
 }
 

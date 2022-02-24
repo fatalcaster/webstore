@@ -1,10 +1,16 @@
 import { Schema, model, Document, Model } from "mongoose";
-
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
+import { NotFoundError } from "../errors/not-found-error";
+import { RequestValidationError } from "../errors/request-validation-error";
+// import { RequestValidationError } from "../errors/request-validation-error";
+import { getProductById } from "../services/product-services";
+// import { InsufficientItemsError } from "../errors/error-templates";
+// import { getProductById } from "../services/product-services";
 export interface ProductProps {
   name: string;
   desc: string;
   price: number;
-  stock?: number | "unlimited";
+  stock?: number;
   ratingSum?: number;
   votes?: number;
   // optional
@@ -19,7 +25,7 @@ export interface ProductDoc extends Document {
   desc: string;
   price: number;
   ratingSum: number;
-  stock: number | "unlimited";
+  stock?: number;
   votes: number;
 }
 
@@ -52,12 +58,13 @@ const productSchema = new Schema<ProductDoc>(
       default: 0,
     },
     stock: {
-      type: String,
-      required: true,
-      default: "unlimited",
+      type: Number,
+      required: false,
+      default: 0,
     },
   },
   {
+    timestamps: true,
     toJSON: {
       transform(_doc: any, ret: any) {
         ret.id = ret._id;
@@ -73,12 +80,42 @@ const productSchema = new Schema<ProductDoc>(
   }
 );
 
+productSchema.plugin(updateIfCurrentPlugin, { strategy: "timestamp" });
+
 productSchema.statics.build = (attrs: ProductProps) => {
   return new Product(attrs);
 };
 
 productSchema.pre("findById", async () => {
   console.log("PROSAO PROSAO PROSAO");
+});
+productSchema.pre("findOneAndUpdate", function (next) {
+  // @ts-ignore
+  const inc = this.getUpdate()?.$inc.stock;
+  if (inc && typeof inc === "number" && inc < 0) {
+    const id = this.getFilter()._id;
+    getProductById(id)
+      .then((product) => {
+        if (!product) {
+          throw new NotFoundError();
+        }
+        console.log("STOCK", product.id, product.stock, inc);
+        if (product?.stock && product.stock + inc < 0) {
+          console.log("NA EKSIC", product.id, product.stock, inc);
+          throw new RequestValidationError([
+            {
+              msg: "Not enough items on hand to record this transaction",
+              params: "cart",
+              id: product.id,
+            },
+          ]);
+        }
+        next();
+      })
+      .catch((err) => {
+        next(err);
+      });
+  } else next();
 });
 
 const Product = model<ProductDoc, ProductModel>("Product", productSchema);
