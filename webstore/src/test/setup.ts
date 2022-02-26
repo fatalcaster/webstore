@@ -1,6 +1,7 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import { app } from "../app";
+import { watchOrders } from "../models/order";
 import { authRoutes } from "../routes/route-opts/auth-opts";
 import { testingRouter } from "../routes/testing-router";
 
@@ -18,7 +19,7 @@ declare global {
     | undefined
   >;
 }
-
+let intervalId: NodeJS.Timeout;
 let mongo: any;
 beforeAll(async () => {
   app.register(testingRouter);
@@ -33,6 +34,7 @@ beforeAll(async () => {
   // const uri = replset.getUri();
 
   await mongoose.connect(mongoUri);
+  intervalId = setInterval(watchOrders, 20);
 });
 
 beforeEach(async () => {
@@ -44,6 +46,7 @@ beforeEach(async () => {
 });
 
 afterAll(async () => {
+  clearInterval(intervalId);
   await mongo.stop();
   await mongoose.connection.close();
   await app.close();

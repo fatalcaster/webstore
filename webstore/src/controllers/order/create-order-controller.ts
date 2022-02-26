@@ -36,12 +36,9 @@ async function createOrderController(req: Request, res: FastifyReply) {
   if (existing_items.length !== cart_query.length) {
     throw new NotFoundError();
   }
-  for (let i = 0; i < existing_items.length; i++) {}
 
   const cart: TCartItem<ProductDoc>[] = [];
   for (let i = 0; i < req_cart.length; i++) {
-    console.log(existing_items[i].id, " | ", req_cart[i].product);
-
     cart.push({
       qty: req_cart[i].qty,
       product: existing_items[i],

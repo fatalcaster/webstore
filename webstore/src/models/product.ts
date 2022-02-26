@@ -86,9 +86,6 @@ productSchema.statics.build = (attrs: ProductProps) => {
   return new Product(attrs);
 };
 
-productSchema.pre("findById", async () => {
-  console.log("PROSAO PROSAO PROSAO");
-});
 productSchema.pre("findOneAndUpdate", function (next) {
   // @ts-ignore
   const inc = this.getUpdate()?.$inc.stock;
@@ -99,9 +96,7 @@ productSchema.pre("findOneAndUpdate", function (next) {
         if (!product) {
           throw new NotFoundError();
         }
-        console.log("STOCK", product.id, product.stock, inc);
         if (product?.stock && product.stock + inc < 0) {
-          console.log("NA EKSIC", product.id, product.stock, inc);
           throw new RequestValidationError([
             {
               msg: "Not enough items on hand to record this transaction",
