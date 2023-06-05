@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.font-rounded {
+  font-family: "Fredoka One", cursive;
+}
+body {
+  --brightness-increase: 1.2;
+  --scale-decrease: 0.7;
+  min-width: 300px;
+  min-height: 300px;
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+}
+* {
+  box-sizing: border-box;
+}
+.clickable {
+  transition: transform 0.1s ease-in-out;
+}
+.clickable:hover {
+  filter: brightness(var(--brightness-increase));
+}
+.clickable:active {
+  transform: scale(var(--scale-decrease));
+}
+.pclick:active > .clickable {
+  transform: scale(var(--scale-decrease));
+}
+.pclick:hover > .clickable {
+  filter: brightness(var(--brightness-increase));
+}
+.cclick {
+  transition: transform 0.1s ease-in-out;
+}
+.cclick:has(.clickable:active) {
+  transform: scale(var(--scale-decrease));
+}
+@media screen and (max-width: 767px) {
+  _::-webkit-full-page-media,
+  _:future,
+  .safari-only {
+    padding-bottom: 85px;
+  }
+  .overflow-lock {
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+}
+.invisible {
+  user-select: none;
+  pointer-events: none;
+  opacity: 0;
+}
+.overflow-lock {
+  /* height: 100vh; */
+  overflow: hidden;
+  /* width: 100%; */
+  position: relative;
+}

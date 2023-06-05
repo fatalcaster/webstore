@@ -16,3 +16,11 @@ build:
         manual:
           - src: "src/**/*.ts"
             dest: .
+    - image: milovicvojin/webstore-client
+      context: client-last
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .

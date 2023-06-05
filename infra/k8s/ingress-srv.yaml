@@ -7,13 +7,37 @@ metadata:
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
-    - host: ticketing.dev
+    - host: codedepo.com
       http:
         paths:
-          - path: /?(.*)
+          - path: /api/?(.*)
             pathType: Prefix
             backend:
               service:
                 name: webstore-srv
+                port:
+                  number: 3000
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: webstore-client-srv
+                port:
+                  number: 3000
+    - host: accounts.codedepo.com
+      http:
+        paths:
+          - path: /api/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-provider-srv
+                port:
+                  number: 3000
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-provider-client-srv
                 port:
                   number: 3000

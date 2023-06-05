@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webstore-depl
+  name: auth-provider-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: webstore
+      app: auth-provider
   template:
     metadata:
       labels:
-        app: webstore
+        app: auth-provider
     spec:
       containers:
-        - name: webstore
-          image: milovicvojin/webstore
+        - name: auth-provider
+          image: milovicvojin/auth-provider
           env:
             - name: JWT_ACCESS_TOKEN
               valueFrom:
@@ -27,12 +27,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: webstore-srv
+  name: auth-provider-srv
 spec:
   selector:
-    app: webstore
+    app: auth-provider
   ports:
-    - name: webstore
+    - name: auth-provider
       protocol: TCP
       port: 3000
       targetPort: 3000

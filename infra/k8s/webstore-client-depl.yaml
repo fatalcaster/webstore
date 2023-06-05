@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webstore-client-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webstore-client
+  template:
+    metadata:
+      labels:
+        app: webstore-client
+    spec:
+      containers:
+        - name: webstore-client
+          image: milovicvojin/webstore-client
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webstore-client-srv
+spec:
+  selector:
+    app: webstore-client
+  ports:
+    - name: webstore-client
+      protocol: TCP
+      port: 3000
+      targetPort: 3000
